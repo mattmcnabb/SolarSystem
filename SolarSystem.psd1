@@ -4,5 +4,10 @@
     GUID = "65a85b72-bd7f-4a74-ad98-a1c9bbec0fd1"
     Author = "Matt McNabb"
     Copyright = '(c) Matt McNabb. All rights reserved.'
-    #RequiredModules = "SHiPS"
+    RequiredModules = "SHiPS"
+    functionsToExport = @(
+        "Get-SolarSystem",
+        "Get-Planet",
+        "Get-Moon"
+    )
 }

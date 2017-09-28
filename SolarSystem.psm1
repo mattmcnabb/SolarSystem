@@ -37,6 +37,21 @@ class Moon : AstralObject
     }
 }
 
+function Get-SolarSystem
+{
+    $Sol
+}
+
+function Get-Planet
+{
+    $Planets
+}
+
+function Get-Moon
+{
+    $Moons
+}
+
 $Script:Sol = [SolarSystem]::new("Sol")
 
 # planets
@@ -53,24 +68,7 @@ $Script:Planets = & {
 
 # moons
 $Script:Moons = & {
-    [Moon]::new("Luna", $Earth)
-    [Moon]::new("Deimos", $Mars)
-    [Moon]::new("Phobos", $Mars)
+    [Moon]::new("Luna", (Get-Planet | Where name -eq "Earth"))
+    [Moon]::new("Deimos", (Get-Planet | Where name -eq "Mars"))
+    [Moon]::new("Phobos", (Get-Planet | Where name -eq "Mars"))
 }
-
-function Get-SolarSystem
-{
-    $Sol
-}
-
-function Get-Planet
-{
-    $Planets
-}
-
-function Get-Moon
-{
-    $Moons
-}
-
-Export-ModuleMember -Variable *

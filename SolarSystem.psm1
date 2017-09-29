@@ -1,74 +1,89 @@
-class AstralObject
-{
-    [string]$Name
-    [guid]$Id
-}
+using namespace Microsoft.PowerShell.SHiPS
 
-class SolarSystem : AstralObject
+[SHiPSProvider(UseCache = $true)]
+class SolarSystem : SHiPSDirectory
 {
-    SolarSystem ($Name)
+    SolarSystem([string]$Name): base($Name)
     {
-        $this.Name = $Name
-        $this.Id = New-Guid
+
+    }
+
+    [object[]] GetChildItem()
+    {
+        return @(Get-Planet)
     }
 }
 
-class Planet : AstralObject
+[SHiPSProvider(UseCache = $true)]
+class Planet : SHiPSDirectory
 {
-    [SolarSystem]$SolarSystem
+    [string]$PlanetName
+    [Moon[]]$Moons
 
-    Planet ($Name, [SolarSystem]$SolarSystem)
+    Planet([string]$PlanetName, [Moon[]]$Moons): base($PlanetName)
     {
-        $this.Name = $Name
-        $this.SolarSystem = $SolarSystem
-        $this.Id = New-Guid
+        $this.PlanetName = $PlanetName
+        $this.Moons = $Moons
+    }
+
+    [object[]] GetChildItem()
+    {
+        return @(Get-Moon -PlanetName $this.PlanetName)
     }
 }
 
-class Moon : AstralObject
+[SHiPSProvider(UseCache = $true)]
+class Moon : SHiPSDirectory
 {
-    [Planet]$Planet
+    [string]$MoonName
 
-    Moon ($Name, [Planet]$Planet)
+    Moon($MoonName): base($MoonName)
     {
-        $this.Name = $Name
-        $this.Planet = $Planet
-        $this.Id = New-Guid
+        $this.MoonName = $MoonName
     }
-}
-
-function Get-SolarSystem
-{
-    $Sol
 }
 
 function Get-Planet
 {
-    $Planets
+    $Planets.Values
 }
 
 function Get-Moon
 {
-    $Moons
+    param ($PlanetName)
+
+    $Planets["$PlanetName"] | Select-Object -ExpandProperty Moons
 }
 
-$Script:Sol = [SolarSystem]::new("Sol")
-
-# planets
-$Script:Planets = & {
-    [Planet]::new("Mercury", $Sol)
-    [Planet]::new("Venus", $Sol)
-    [Planet]::new("Earth", $Sol)
-    [Planet]::new("Mars", $Sol)
-    [Planet]::new("Jupiter", $Sol)
-    [Planet]::new("Saturn", $Sol)
-    [Planet]::new("Uranus", $Sol)
-    [Planet]::new("Neptune", $Sol)
+$Script:Moons = @{
+    Luna     = [Moon]::new("Luna")
+    Deimos   = [Moon]::new("Deimos")
+    Phobos   = [Moon]::new("Phobos")
+    Io       = [Moon]::new("Io")
+    Europa   = [Moon]::new("Europa")
+    Ganymede = [Moon]::new("Ganymede")
+    Calisto  = [Moon]::new("Calisto")
+    Titan    = [Moon]::new("Titan")
+    Rhea     = [Moon]::new("Rhea")
+    Dione    = [Moon]::new("Dione")
+    Tethys   = [Moon]::new("Tethys")
+    Iapetus  = [Moon]::new("Iapetus")
+    Oberon   = [Moon]::new("Oberon")
+    Titania  = [Moon]::new("Titania")
+    Umbriel  = [Moon]::new("Umbriel")
+    Ariel    = [Moon]::new("Ariel")
+    Miranda  = [Moon]::new("Miranda")
+    Triton   = [Moon]::new("Triton")
+    Proteus  = [Moon]::new("Proteus")
 }
 
-# moons
-$Script:Moons = & {
-    [Moon]::new("Luna", (Get-Planet | Where name -eq "Earth"))
-    [Moon]::new("Deimos", (Get-Planet | Where name -eq "Mars"))
-    [Moon]::new("Phobos", (Get-Planet | Where name -eq "Mars"))
+$Script:Planets = @{
+    Mercury = [Planet]::new("Mercury", $null)
+    Venus   = [Planet]::new("Venus", $null)
+    Earth   = [Planet]::new("Earth", $Moons["Luna"])
+    Mars    = [Planet]::new("Mars", @($Moons["Deimos"], $Moons["Phobos"]))
+    Jupiter = [Planet]::new("Jupiter", @($Moons["Io"], $Moons["Europa"],$Moons["Ganymede"], $Moons["Calisto"]))
+    Saturn  = [Planet]::new("Saturn", @($Moons["Titan"], $Moons["Rhea"],$Moons["Dione"], $Moons["Tethys"],$Moons["Iapetus"]))
+    Uranus  = [Planet]::new("Uranus", @($Moons["Oberon"], $Moons["Titania"],$Moons["Umbriel"], $Moons["Ariel"],$Moons["Miranda"]))
+    Neptune = [Planet]::new("Neptune", @($Moons["Proteus"],$Moons["Triton"]))
 }

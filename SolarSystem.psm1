@@ -1,6 +1,5 @@
 using namespace Microsoft.PowerShell.SHiPS
 
-[SHiPSProvider(UseCache = $true)]
 class SolarSystem : SHiPSDirectory
 {
     SolarSystem([string]$Name): base($Name)
@@ -14,7 +13,6 @@ class SolarSystem : SHiPSDirectory
     }
 }
 
-[SHiPSProvider(UseCache = $true)]
 class Planet : SHiPSDirectory
 {
     [string]$PlanetName
@@ -32,8 +30,7 @@ class Planet : SHiPSDirectory
     }
 }
 
-[SHiPSProvider(UseCache = $true)]
-class Moon : SHiPSDirectory
+class Moon : SHiPSLeaf
 {
     [string]$MoonName
 
@@ -63,6 +60,7 @@ $Script:Moons = @{
     Europa   = [Moon]::new("Europa")
     Ganymede = [Moon]::new("Ganymede")
     Calisto  = [Moon]::new("Calisto")
+    Thebe    = [Moon]::new("Thebe")
     Titan    = [Moon]::new("Titan")
     Rhea     = [Moon]::new("Rhea")
     Dione    = [Moon]::new("Dione")
@@ -82,7 +80,7 @@ $Script:Planets = @{
     Venus   = [Planet]::new("Venus", $null)
     Earth   = [Planet]::new("Earth", $Moons["Luna"])
     Mars    = [Planet]::new("Mars", @($Moons["Deimos"], $Moons["Phobos"]))
-    Jupiter = [Planet]::new("Jupiter", @($Moons["Io"], $Moons["Europa"],$Moons["Ganymede"], $Moons["Calisto"]))
+    Jupiter = [Planet]::new("Jupiter", @($Moons["Io"], $Moons["Europa"],$Moons["Ganymede"], $Moons["Calisto"], $Moons["Thebe"]))
     Saturn  = [Planet]::new("Saturn", @($Moons["Titan"], $Moons["Rhea"],$Moons["Dione"], $Moons["Tethys"],$Moons["Iapetus"]))
     Uranus  = [Planet]::new("Uranus", @($Moons["Oberon"], $Moons["Titania"],$Moons["Umbriel"], $Moons["Ariel"],$Moons["Miranda"]))
     Neptune = [Planet]::new("Neptune", @($Moons["Proteus"],$Moons["Triton"]))
